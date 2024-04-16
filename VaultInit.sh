@@ -1,13 +1,20 @@
 #!/bin/sh
 
 # Read options and corresponding values
-while getopts "n:v:" option; do
-   case "$option" in
-       n) NAMESPACE=${OPTARG};;
-       v) VAULT_NAME=${OPTARG};;
-   esac
-done
+#while getopts "n:v:" option; do
+#   case "$option" in
+#       n) NAMESPACE=${OPTARG};;
+#       v) VAULT_NAME=${OPTARG};;
+#   esac
+#done
 
+#NAMESPACE="anvault"
+#VAULT_NAME="anvault"
+
+
+
+echo $NAMESPACE
+echo $VAULT_NAME
 
 #echo -e "\nKubectl namespace creation\n"
 #kubectl create namespace $NAMESPACE
@@ -18,17 +25,17 @@ done
 #helm install $VAULT_NAME hashicorp/vault --version 0.24.0 --values helm-vault-raft-values.yml -n $NAMESPACE --wait --timeout 120s
 
 
-echo -e "\nChecking vault pod status\n"
-helm status $VAULT_NAME -n $NAMESPACE
+#echo -e "\nChecking vault pod status\n"
+#helm status $VAULT_NAME -n $NAMESPACE
 
 
 # Wait until the deployment is complete
-until helm status "$VAULT_NAME" -n $NAMESPACE  | grep "STATUS: deployed"; do
-  echo "Waiting for deployment to complete..."
-  sleep 1
-done
+#until helm status "$VAULT_NAME" -n $NAMESPACE  | grep "STATUS: deployed"; do
+#  echo "Waiting for deployment to complete..."
+#  sleep 1
+#done
 # The deployment is complete
-echo "Deployment complete!"
+#echo "Deployment complete!"
 
 
 
@@ -49,12 +56,18 @@ echo "Deployment complete!"
 #done
 
 # ####################### VAULT CONFIGURATION AFTER INSTALL ################################
+
+
 echo -e "\nChecking vault status\n"
 kubectl exec $VAULT_NAME-0 -n $NAMESPACE -- vault status
+
+sleep 10
 
 echo -e "Vault is getting Initialized\n\n"
 kubectl exec $VAULT_NAME-0 -n $NAMESPACE -- vault operator init -key-shares=1 -key-threshold=1 -format=json > vault-keys.json
 #echo -e "VI. Show unsealkeys"
+
+sleep 30
 
 #cat vault-keys.json | jq -r ".unseal_keys_b64[]"
 echo -e "\nVault unseal key is getting set\n"
