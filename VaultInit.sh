@@ -90,6 +90,24 @@ echo -e "\nAuthenticate vaultt\n"
 kubectl exec $VAULT_NAME-0 -n $NAMESPACE -- vault login $CLUSTER_ROOT_TOKEN
 #echo "V. Vault Init"
 
+kubectl exec $VAULT_NAME-0 -n $NAMESPACE -- vault operator raft list-peers
+
+kubectl exec $VAULT_NAME-1 -n $NAMESPACE -- vault operator raft join http://$VAULT_NAME-0.$VAULT_NAME-internal:8200
+
+kubectl exec $VAULT_NAME-1 -n $NAMESPACE -- vault operator unseal $VAULT_UNSEAL_KEY
+
+kubectl exec $VAULT_NAME-1 -n $NAMESPACE -- vault operator unseal $VAULT_UNSEAL_KEY
+
+kubectl exec $VAULT_NAME-2 -n $NAMESPACE -- vault operator raft join http://$VAULT_NAME-0.$VAULT_NAME-internal:8200
+
+kubectl exec $VAULT_NAME-2 -n $NAMESPACE -- vault operator unseal $VAULT_UNSEAL_KEY
+
+kubectl exec $VAULT_NAME-2 -n $NAMESPACE -- vault operator unseal $VAULT_UNSEAL_KEY
+
+kubectl exec $VAULT_NAME-0 -n $NAMESPACE -- vault operator raft list-peers
+
+
+
 #kubectl exec --stdin=true --tty=true $VAULT_NAME-0 -n $NAMESPACE -- /bin/sh
 echo -e "\nSet vault enable kubernetes\n"
 
